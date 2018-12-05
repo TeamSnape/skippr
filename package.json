@@ -28,6 +28,7 @@
     "pg-format": "^1.0.4",
     "pg-hstore": "^2.3.2",
     "pg-promise": "^5.9.7",
-    "sql-template-strings": "^2.2.2"
+    "sql-template-strings": "^2.2.2",
+    "twilio": "^3.25.0"
   }
 }
