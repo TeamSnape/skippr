@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server/server.js",
-    "server": "node src/server/server.js"
+    "start": "nodemon src/server/server.js",
+    "server": "nodemon src/server/server.js"
   },
   "author": "team redlippedbatfish",
   "license": "ISC",
@@ -15,7 +15,8 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "nodemon": "^1.18.7"
   },
   "dependencies": {
     "bluebird": "^3.5.3",
