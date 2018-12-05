@@ -1,3 +1,10 @@
+require('dotenv').config();
+
+const client = require('twilio')(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
 const pgClient = require('../models/database');
 
 // fetch list of incomplete orders for restaurant ID
@@ -36,12 +43,41 @@ function submitOrder(req, res) {
 
 // update order ready status to be true for specific orders in orders table
 function completeOrder(req, res) {
+
   const { orderId } = req.params;
+
   const values = [orderId];
-  const completeOrderStr = 'UPDATE orders SET order_ready = true WHERE order_id = $1 RETURNING order_ready AS order_ready;';
-  pgClient.query(completeOrderStr, values, (err) => {
+  const completeOrderStr = 'UPDATE orders SET order_ready = true WHERE order_id = $1 RETURNING fk_user_id AS fk_user_id;';
+  pgClient.query(completeOrderStr, values, (err, result) => {
     if (err) res.status(400).json({ error: 'Unable to update order' });
     else {
+
+      const userId = result.rows[0].fk_user_id;
+      const userIdNum = [userId];
+      const selectQuery = 'SELECT user_phone FROM users WHERE user_id = $1';
+
+      pgClient.query(selectQuery, userIdNum, (err, result) => {
+        if (err) res.status(400).json({ error: 'Unable to update order' });
+        else {
+
+          const number = result.rows[0].user_phone;
+          client.messages.create({
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: number,
+            body: 'Your Menottis coffee order is ready.',
+            orderId,
+          });
+        }
+      });
+
+
+      // client.messages.create({
+      //   from: process.env.TWILIO_PHONE_NUMBER,
+      //   to: process.env.CELL_PHONE_NUMBER,
+      //   body: 'Your Menottis coffee order is ready.',
+      //   orderId,
+      // });
+
       res.status(200).json({
         message: 'This order has been completed',
         orderId,
